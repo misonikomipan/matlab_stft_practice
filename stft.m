@@ -12,21 +12,27 @@ theta=0;
 
 amp=0.1;
 
-y1=amp*sin(omega1*time+theta);
-y2=amp*sin(omega2*time+theta);
+sinwave1=amp*sin(omega1*time+theta);
+sinwave2=amp*sin(omega2*time+theta);
 
-y=y1+y2;
+sinwave=sinwave1+sinwave2;
 
 length=1024;
-w=hann(length);
+win=hann(length);
 
 shiftSize=length/2;
-y=padarray(y,256,0,'post');
+rem=1-T*Fs/shiftSize;
+correctionDigit=shiftSize*rem;
+fixedwave=padarray(sinwave,correctionDigit,0,'post');
+
+column=T*Fs/shiftSize;
+spectrogram=zeros(length,column);
 
 for start=0:shiftSize:T*Fs
-    x=y(start:start+length);
-    xw=x.*w;
-    y(start:start+length)=fft(xw);
+    cutwave=fixedwave(start:start+length);
+    cutwavewin=cutwaxe.*win;
+    gaincolumn=(start/512)+1;
+    spectrogram(:,gaincolumn)=fft(cutwavewin);
 end
 
 
