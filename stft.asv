@@ -20,4 +20,10 @@ y=y1+y2;
 length=1024;
 w=hann(length);
 
-for i=0:
+shiftSize=length/2;
+y=padarray(y,256,0);
+for start=0:shiftSize:T*Fs
+    x=y(start:start+length);
+    xw=x.*w;
+    y[i*length/2<=time&time<=(i/2+1)*length]=fft(xw);
+end
