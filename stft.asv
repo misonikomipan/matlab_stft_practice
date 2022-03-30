@@ -20,11 +20,4 @@ y=y1+y2;
 length=1024;
 w=hann(length);
 
-shiftSize=length/2;
-y=padarray(y,256,0,'post');
-
-for start=0:shiftSize:T*Fs
-    x=y(start:start+length);
-    xw=x.*w;
-    y(start:start+length)=fft(xw);
-end
+for i=0:
