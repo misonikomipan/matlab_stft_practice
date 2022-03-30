@@ -28,3 +28,6 @@ for start=0:shiftSize:T*Fs
     xw=x.*w;
     y(start:start+length)=fft(xw);
 end
+
+
+
