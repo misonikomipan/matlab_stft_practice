@@ -1,8 +1,8 @@
 clear; close all; clc;
 
-Fs = 16*1000;
-nyquistFrequecy=Fs/2;
-T = 10;
+Fs = 16*1000; % サンプリング周波数
+nyquistFrequecy=Fs/2; % ナイキスト周波数
+T = 10; % 周期
 time = linspace(0,T,T*Fs).';
 
 f1 = 440;
@@ -13,40 +13,18 @@ theta = 0;
 
 amp = 0.1;
 
-sinwave1 = amp*sin(omega1*time+theta);
-sinwave2 = amp*sin(omega2*time+theta);
+sinWave1 = amp*sin(omega1*time+theta);
+sinWave2 = amp*sin(omega2*time+theta);
 
-sinwave = sinwave1+sinwave2;
+inputSignal = sinWave1+sinWave2;
 
-length = 1024;
-win = hann(length);
+[powerSpectrogram,nTimeFrame,long]=ps(T,Fs,inputSignal);
 
-shiftSize = length/2;
-rem = rem(T*Fs,shiftSize);
-padSize = length-rem;
-zeroMatrix = zeros(padSize,1);
-fixedWave = cat(1,sinwave,zeroMatrix);
-
-nTimeFrame = (T*Fs+padSize)/shiftSize-1;
-spectrogram = zeros(length,nTimeFrame);
-
-for start = 1:1:nTimeFrame
-    startP = 1+(start-1)*shiftSize;
-    endP = startP+length-1;
-    cutWave = fixedWave(startP:endP);
-    cutWaveWin = cutWave.*win;
-    spectrogram(:,start) = fft(cutWaveWin);
-end
-
-
-
-powerSpectrogram = 10*log10(abs(spectrogram).^2);
-
-xAxis = linspace(0,T,nTimeFrame);
-yAxis = linspace(0,Fs,length);
+xAxis = linspace(0,T,nTimeFrame); % x: 時間軸
+yAxis = linspace(0,Fs,long); % y: 周波数軸
 sc = imagesc('XData',xAxis,'YData',yAxis,'CData',powerSpectrogram);
-axis  tight;
-ylim([0 nyquistFrequecy])
+axis  tight; % 表示の時の枠補正
+ylim([0 nyquistFrequecy]) % 反転表示部分カット
 colorbar
 
 

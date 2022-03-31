@@ -1,41 +1,20 @@
 clear; close all; clc;
 
-[y,Fs] = audioread('step4.wav');
-inputSignal = y(:,1);
+[y,Fs] = audioread('step4.wav'); % 音声ファイル認識
+inputSignal = y(:,1); % ステレオ音声の片方採取
 nyquistFrequecy=Fs/2;
-T = size(inputSignal,1)/Fs;
-
+T = size(inputSignal,1)/Fs; % 周期の計算
 time = linspace(0,T,T*Fs).';
 
-length = 1024;
-win = hann(length);
+[powerSpectrogram,nTimeFrame,long]=ps(T,Fs,inputSignal);
 
-shiftSize = length/2;
-rem = rem(T*Fs,shiftSize);
-padSize = length-rem;
-zeroMatrix = zeros(padSize,1);
-fixedWave = cat(1,inputSignal,zeroMatrix);
-
-nTimeFrame = (T*Fs+padSize)/shiftSize-1;
-spectrogram = zeros(length,nTimeFrame);
-
-for start = 1:1:nTimeFrame
-    startP = 1+(start-1)*shiftSize;
-    endP = startP+length-1;
-    cutWave = fixedWave(startP:endP);
-    cutWaveWin = cutWave.*win;
-    spectrogram(:,start) = fft(cutWaveWin);
-end
-
-powerSpectrogram = 10*log10(abs(spectrogram).^2);
 maximum = max(max(powerSpectrogram));
-
-xAxis = linspace(0,T,nTimeFrame);
-yAxis = linspace(0,Fs,length);
+xAxis = linspace(0,T,nTimeFrame); % x: 時間軸
+yAxis = linspace(0,Fs,long); % y: 周波数軸
 sc = imagesc('XData',xAxis,'YData',yAxis,'CData',powerSpectrogram);
-axis  tight;
-caxis([-60 maximum])
-ylim([0 nyquistFrequecy])
+axis  tight; % 表示の時の枠補正
+caxis([-60 maximum]) % 表示色の範囲指定
+ylim([0 nyquistFrequecy])% 反転表示部分カット
 colorbar
 
 
